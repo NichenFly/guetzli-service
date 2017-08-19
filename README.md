@@ -1,6 +1,6 @@
 # guetzli
 
-> 为Google's Guetzli做个页面
+> 为Google's [Guetzli](https://github.com/google/guetzli)做个页面
 
 ## Build Setup
 
