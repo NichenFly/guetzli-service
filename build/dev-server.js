@@ -15,7 +15,14 @@ var webpackConfig = require('./webpack.dev.conf')
 /////////////////// 文件上传引入的
 var multer = require('multer')
 var md5 = require('md5')
+
+//获取异步步子进程的promise版本
+var util = require('util')
+var exec = util.promisify(require('child_process').exec)
 var Logger = require('log4js').getLogger()
+
+//获取当前的项目目录
+var cwd = process.cwd()
 
 //日志等级
 Logger.level = 'all'
@@ -37,7 +44,7 @@ var app = express()
 // upload a file
 var apiRoutes = express.Router()
 var storage = multer.diskStorage({
-    destination: process.cwd() + '/files',
+    destination: `${cwd}/files`,
     filename: function(req, file, cb) {
         var fileFormat = (file.originalname).split(".")
         cb(null, file.fieldname + '-' + md5(file) + "." + fileFormat[fileFormat.length - 1])
@@ -49,17 +56,27 @@ var upload = multer({
     // fileFilter() {}
 });
 
+async function execGuetzli(req) {
+    //执行异步子进程
+    const cmd = `guetzli --quality 84 ${cwd}/files/${req.file.filename} ${cwd}/files/${req.file.originalname}`
+    const { stdout, stderr } = await exec(cmd)
+
+    Logger.info(stdout)
+    Logger.error(stderr)
+}
+
 // 文件上传接口定义
 apiRoutes.post('/upload', upload.single('guetzli'), function(req, res) {
     Logger.info(req.file)
 
+    execGuetzli(req)
 
     //信息状态返回
     let result = {
         code: 200,
         msg: '成功',
         info: {
-            file: req.file.filename
+            file: req.file.originalname
         }
     }
 
