@@ -14,15 +14,18 @@
                 ref="vueFileUploader"></vue-file-upload>
         </div>
         <div class="input-area">
-            <input type="text" class="input" placeholder="在此处粘贴图片地址">
+            <input type="text" class="input"  v-model.trim="imgUrl" @keyup.enter="submit" placeholder="在此处粘贴图片地址">
         </div>
     </div>
 </template>
 <script>
     import VueFileUpload from 'vue-file-upload'
+    import axios from 'axios'
+
     export default {
         data() {
             return {
+                imgUrl: '',
                 files: [],
                 // 文件过滤器，只能上传图片
                 filters: [
@@ -55,6 +58,15 @@
             this.url = '/api/upload'
         },
         methods: {
+            submit() {
+                axios.post('/api/imgurl', {
+                    imgUrl: this.imgUrl
+                }).then((response) => {
+                    console.log(response)
+                }).catch(function (error) {
+                    console.log(error)
+                })
+            },
             onStatus(file) {
                 if (file.isSuccess) {
                     return '上传成功'

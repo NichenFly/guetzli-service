@@ -20,6 +20,7 @@ var md5 = require('md5')
 var util = require('util')
 var exec = util.promisify(require('child_process').exec)
 var Logger = require('log4js').getLogger()
+    // var bodyParser = require("body-parser")
 
 //获取当前的项目目录
 var cwd = process.cwd()
@@ -40,6 +41,7 @@ var autoOpenBrowser = !!config.dev.autoOpenBrowser
 var proxyTable = config.dev.proxyTable
 
 var app = express()
+    // app.use(bodyParser.urlencoded({ extended: false }))
 
 // upload a file
 var apiRoutes = express.Router()
@@ -85,7 +87,16 @@ apiRoutes.post('/upload', upload.single('guetzli'), function(req, res) {
 
 //接收一个图片的url
 apiRoutes.post('/imgurl', function(req, res) {
+    Logger.info(req.query)
+    let result = {
+        code: 200,
+        msg: '成功',
+        info: {
+            file: ''
+        }
+    }
 
+    res.json(result)
 })
 app.use('/api', apiRoutes)
 
