@@ -59,17 +59,17 @@ var upload = multer({
 async function execGuetzli(req) {
     //执行异步子进程
     const cmd = `guetzli --quality 84 ${cwd}/files/${req.file.filename} ${cwd}/files/${req.file.originalname}`
-    const { stdout, stderr } = await exec(cmd)
-
-    Logger.info(stdout)
-    Logger.error(stderr)
+    return await exec(cmd)
 }
 
 // 文件上传接口定义
 apiRoutes.post('/upload', upload.single('guetzli'), function(req, res) {
     Logger.info(req.file)
 
-    execGuetzli(req)
+    // 没搞定
+    // execGuetzli(req).then((res) => {
+    //     Logger.info(res)
+    // })
 
     //信息状态返回
     let result = {
