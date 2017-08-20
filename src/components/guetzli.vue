@@ -8,7 +8,9 @@
                 :filters="filters"
                 :events="cbEvents"
                 :request-options="reqopts"
-                @onAdd = "onAddItem"
+                @onAdd="onAddItem"
+                :autoUpload="true"
+                name="guetzli"
                 ref="vueFileUploader"></vue-file-upload>
         </div>
         <div class="input-area">
@@ -28,7 +30,7 @@
                         name: 'imageFilter',
                         fn(file) {
                             var type = '|' + file.type.slice(file.type.lastIndexOf('/') + 1) + '|'
-                            return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1
+                            return '|jpg|png|jpeg|'.indexOf(type) !== -1
                         }
                     }
                 ],
@@ -42,7 +44,7 @@
                 // xhr请求附带参数
                 reqopts: {
                     formData: {
-                        tokens: 'tttttttttttttt'
+                        guetzli: 'guetzli'
                     },
                     responseType: 'json',
                     withCredentials: false
@@ -50,7 +52,7 @@
             }
         },
         created() {
-            this.url = '/upload'
+            this.url = '/api/upload'
         },
         methods: {
             onStatus(file) {
