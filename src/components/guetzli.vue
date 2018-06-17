@@ -1,20 +1,50 @@
 <template>
     <div class="container">
-        <div class="upload-area">
-            <input type="file" class="upload">
-            <vue-file-upload
-                label="本地上传"
-                :url="url"
-                :filters="filters"
-                :events="cbEvents"
-                :request-options="reqopts"
-                @onAdd="onAddItem"
-                :autoUpload="true"
-                name="guetzli"
-                ref="vueFileUploader"></vue-file-upload>
+        <div class="img-container">
+            <div class="upload-area">
+                <input type="file" class="upload">
+                <vue-file-upload
+                    label="本地上传"
+                    :url="url"
+                    :filters="filters"
+                    :events="cbEvents"
+                    :request-options="reqopts"
+                    @onAdd="onAddItem"
+                    :autoUpload="true"
+                    name="guetzli"
+                    ref="vueFileUploader"></vue-file-upload>
+            </div>
+            <div class="input-area">
+                <input type="text" class="input"  v-model.trim="imgUrl" @keyup.enter="submit" placeholder="在此处粘贴图片地址(暂不支持)">
+            </div>
         </div>
-        <div class="input-area">
-            <input type="text" class="input"  v-model.trim="imgUrl" @keyup.enter="submit" placeholder="在此处粘贴图片地址">
+        <div class="show-container">
+            <div class="record">
+                <div class="left-area">
+                    <div class="img">
+                        <img src="">
+                    </div>
+                    <div class="img-info">
+                        <table>
+                            <tr>
+                                <td>文件名: </td>
+                                <td>阿萨达</td>
+                            </tr>
+                            <tr>
+                                <td>文件大小: </td>
+                                <td>100KB</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="right-area">
+                    <div class="img-info">
+                    </div>
+                    <div class="img">
+                        <img src="">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -102,40 +132,101 @@
 </script>
 <style lang="scss" scoped type="stylesheet/scss">
     .container {
-        background-color: #ccc;
-        display: flex;
-        padding: 0 260px;
-
-        & > .upload-area {
-            padding: 20px;
+        & > .img-container {
+            background-color: #ccc;
             display: flex;
-            height: 40px;
+            padding: 0 260px;
 
-            & > .fileupload-button {
-                padding: 10px;
-                background-color: #fff;
-                color: #2c3e50;
-                font-size: 16px;
+            & > .upload-area {
+                padding: 20px;
+                display: flex;
+                height: 40px;
+
+                & > .fileupload-button {
+                    padding: 10px;
+                    background-color: #fff;
+                    color: #2c3e50;
+                    font-size: 16px;
+                }
+
+                & > .upload {
+                    display: none;
+                }
             }
+            
+            & > .input-area {
+                padding: 20px;
+                display: flex;
+                flex-grow: 1;
 
-            & > .upload {
-                display: none;
+                & > .input {
+                    outline: none;
+                    text-indent: 10px;
+                    border: 1px solid #ccc;
+                    width: 100%;
+                }
+                & > .input:focus {
+                    border: 1px solid #2c3e50;
+                }
             }
         }
-        
-        & > .input-area {
-            padding: 20px;
-            display: flex;
-            flex-grow: 1;
 
-            & > .input {
-                outline: none;
-                text-indent: 10px;
-                border: 1px solid #ccc;
-                width: 100%;
-            }
-            & > .input:focus {
-                border: 1px solid #2c3e50;
+        .show-container {
+            display: block;
+            padding: 30px;
+            & > .record {
+                display: flex;
+                flex-wrap: nowrap;
+                justify-content: center;
+                align-items: center;
+
+                & > .left-area, & > .right-area {
+                    display: flex;
+                    flex-wrap: nowrap;
+                    height: 300px;
+                    width: 500px;
+                    background-color: aquamarine;
+                    margin: 10px;
+
+                    & > .img {
+                        width: 300px;
+                        height: 300px;
+                        background-color: aqua;
+                    }
+                    & > .img-info {
+                        width: 200px;
+                        height: 300px;
+                        color: #777;
+                        background-color: antiquewhite;
+                        table {
+                            border-collapse: collapse;
+                        }
+                        tr {
+                            border-bottom: solid rgb(165, 134, 116) 1px;
+                        }
+                        tr:last-child {
+                            border-bottom: none;
+                        }
+
+                        tr > td:nth-child(1) {
+                            text-align: right;
+                        }
+                        tr > td:nth-child(2) {
+                            text-align: left;
+                        }
+                        td {
+                            width: 100px;
+                        }
+                    }
+                }
+                & > .left-area {
+                    justify-content: flex-end;
+                    align-items: flex-start;
+                }
+                & > .right-area {
+                    justify-content: flex-start;
+                    align-items: flex-end;
+                }
             }
         }
     }

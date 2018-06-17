@@ -17,10 +17,11 @@ var multer = require('multer')
 var md5 = require('md5')
 
 //获取异步步子进程的promise版本
-var util = require('util')
-var exec = util.promisify(require('child_process').exec)
 var Logger = require('log4js').getLogger()
 var bodyParser = require("body-parser")
+const { spawn } = require('child_process')
+const fs = require('fs')
+const shelljs = require('shelljs')
 
 //获取当前的项目目录
 var cwd = process.cwd()
@@ -50,7 +51,7 @@ var storage = multer.diskStorage({
     destination: `${cwd}/files`,
     filename: function(req, file, cb) {
         var fileFormat = (file.originalname).split(".")
-        cb(null, file.fieldname + '-' + md5(file) + "." + fileFormat[fileFormat.length - 1])
+        cb(null, `guetzli-${new Date().getTime()}-${md5(file)}.${fileFormat[fileFormat.length - 1]}`)
     }
 })
 var upload = multer({
@@ -59,30 +60,68 @@ var upload = multer({
     // fileFilter() {}
 });
 
-async function execGuetzli(req) {
-    //执行异步子进程
-    const cmd = `guetzli --quality 84 ${cwd}/files/${req.file.filename} ${cwd}/files/${req.file.originalname}`
-    return await exec(cmd)
+/**
+ * 执行压缩逻辑
+ * @param {*} originFileName 传入的文件
+ * @param {*} savedFileName 处理后保存的文件
+ */
+function execGuetzli(filepath, dealedFilepath) {
+    try {
+        const cmd = `guetzli --quality 84 ${filepath} ${dealedFilepath}`
+
+        Logger.info('执行命令: ', `guetzli ${cmd}`)
+
+        Logger.info('执行中...')
+
+        // 执行压缩程序
+        const execChildInfo = shelljs.exec(cmd, { silent: true })
+        if (execChildInfo.code !== 0) {
+            Logger.error('执行命令出错: %s', execChildInfo.stderr)
+        }
+        Logger.info('执行结束...')
+    } catch(err) {
+        Logger.error('执行命令出错: ', err)
+    }
 }
 
 // 文件上传接口定义
 apiRoutes.post('/upload', upload.single('guetzli'), function(req, res) {
-    Logger.info(req.file)
+    let uploadFile = req.file
+    if (uploadFile.size === 0) {
+        res.json({
+            code: 1,
+            msg: '内容为空'
+        })
+        return
+    }
 
-    // 没搞定
-    // execGuetzli(req).then((res) => {
-    //     Logger.info(res)
-    // })
+    const filepath = uploadFile.path
+    const dealedFilepath = `${uploadFile.destination}/_${uploadFile.filename}`
+    execGuetzli(filepath, dealedFilepath)
 
-    //信息状态返回
+    let fileInfo = fs.statSync(filepath)
+    let dealedFileInfo = fs.statSync(dealedFilepath)
+
+    // 信息状态返回
+    const filename = uploadFile.filename
+    const fileSize = fileInfo.size
+    const dealedSize = dealedFileInfo.size
+
     let result = {
         code: 200,
         msg: '成功',
         info: {
-            file: req.file.originalname
+            file: {
+                path: `files/${filename}`,
+                size: `${parseInt(fileSize / 1024)}KB`
+            },
+            dealed: {
+                path: `file/_${filename}`,
+                size: `${parseInt(dealedSize / 1024)}KB`
+            },
+            rate: ((fileSize - dealedSize) / fileSize * 100).toFixed(2)
         }
     }
-
     res.json(result)
 })
 
