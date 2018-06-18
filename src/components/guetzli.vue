@@ -19,29 +19,25 @@
             </div>
         </div>
         <div class="show-container">
-            <div class="record">
+            <div class="record" v-for="(file, index) in uploadedFiles" :key="index">
                 <div class="left-area">
-                    <div class="img">
-                        <img src="">
-                    </div>
                     <div class="img-info">
-                        <table>
-                            <tr>
-                                <td>文件名: </td>
-                                <td>阿萨达</td>
-                            </tr>
-                            <tr>
-                                <td>文件大小: </td>
-                                <td>100KB</td>
-                            </tr>
-                        </table>
+                        <span>原图片大小: {{file.origin.size}}</span>
+                    </div>
+                    <div class="img">
+                        <img :src="file.origin.url">
                     </div>
                 </div>
                 <div class="right-area">
                     <div class="img-info">
+                        <span>处理后图片大小: {{file.dealed.size}}</span>
+                        <span>压缩比: {{file.rate}}%</span>
+                        <span>
+                            <a :href="file.dealed.download">下载</a>
+                        </span>
                     </div>
                     <div class="img">
-                        <img src="">
+                        <img :src="file.dealed.url">
                     </div>
                 </div>
             </div>
@@ -57,6 +53,7 @@
             return {
                 imgUrl: '',
                 files: [],
+                uploadedFiles: [],
                 // 文件过滤器，只能上传图片
                 filters: [
                     {
@@ -70,7 +67,14 @@
                 // 回调函数绑定
                 cbEvents: {
                     onCompleteUpload: (file, response, status, header) => {
-                        console.log(file)
+                        console.log(response)
+                        if (response.code === 0) {
+                            let fileInfo = response.info
+                            fileInfo.origin.url = `/api/img/${fileInfo.origin.filename}`
+                            fileInfo.dealed.url = `/api/img/${fileInfo.dealed.filename}`
+                            fileInfo.dealed.download = `/api/download/${fileInfo.dealed.filename}`
+                            this.uploadedFiles.push(fileInfo)
+                        }
                         console.log('finish upload')
                     }
                 },
@@ -109,7 +113,6 @@
                 }
             },
             onAddItem(files) {
-                console.log(files)
                 this.files = files
             },
             uploadItem(file) {
@@ -131,6 +134,8 @@
     }
 </script>
 <style lang="scss" scoped type="stylesheet/scss">
+    $boxSize: 400px;
+    $boxInfoHeight: 30px;
     .container {
         & > .img-container {
             background-color: #ccc;
@@ -183,49 +188,39 @@
                 & > .left-area, & > .right-area {
                     display: flex;
                     flex-wrap: nowrap;
-                    height: 300px;
-                    width: 500px;
-                    background-color: aquamarine;
+                    flex-direction: column;
+                    // height: 300px;
+                    width: $boxSize;
+                    background-color: beige;
                     margin: 10px;
+                    justify-content: flex-start;
+                    align-items: flex-start;
+
+                    & > .img, & > .img-info {
+                        width: $boxSize;
+                    }
 
                     & > .img {
-                        width: 300px;
-                        height: 300px;
-                        background-color: aqua;
+                        // height: $boxSize;
+                        // background-color: aqua;
+
+                        display: flex;
+                        justify-content: space-around;
+                        align-items: flex-start;
+
+                        img {
+                            max-width: $boxSize;
+                            max-height: $boxSize;
+                        }
                     }
                     & > .img-info {
-                        width: 200px;
-                        height: 300px;
+                        display: flex;
+                        justify-content: space-around;
+                        align-items: center;
+                        height: $boxInfoHeight;
                         color: #777;
                         background-color: antiquewhite;
-                        table {
-                            border-collapse: collapse;
-                        }
-                        tr {
-                            border-bottom: solid rgb(165, 134, 116) 1px;
-                        }
-                        tr:last-child {
-                            border-bottom: none;
-                        }
-
-                        tr > td:nth-child(1) {
-                            text-align: right;
-                        }
-                        tr > td:nth-child(2) {
-                            text-align: left;
-                        }
-                        td {
-                            width: 100px;
-                        }
                     }
-                }
-                & > .left-area {
-                    justify-content: flex-end;
-                    align-items: flex-start;
-                }
-                & > .right-area {
-                    justify-content: flex-start;
-                    align-items: flex-end;
                 }
             }
         }
