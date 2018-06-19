@@ -1,13 +1,13 @@
-var Logger = require('log4js').getLogger()
+let Logger = require('log4js').getLogger()
 const shelljs = require('shelljs')
-var multer = require('multer')
-var md5 = require('md5')
+const multer = require('multer')
+const md5 = require('md5')
 
 // 日志等级
 Logger.level = 'all'
 
 // 获取当前的项目目录
-var cwd = process.cwd()
+const cwd = process.cwd()
 
 /**
  * 执行压缩逻辑
@@ -48,7 +48,7 @@ let storage = multer.diskStorage({
         cb(null, `guetzli-${new Date().getTime()}-${md5(file)}.${fileFormat[fileFormat.length - 1]}`)
     }
 })
-var upload = multer({
+const upload = multer({
     storage: storage
     // limits:{}
     // fileFilter() {}

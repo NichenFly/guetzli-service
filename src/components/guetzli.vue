@@ -91,6 +91,9 @@
         created() {
             this.url = '/api/upload'
         },
+        sockets: {
+            // socket相关
+        },
         methods: {
             submit() {
                 axios.post('/api/imgurl', {
