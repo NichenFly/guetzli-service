@@ -124,7 +124,7 @@
                 axios.post('/api/imgurl', {
                     imgUrl: this.imgUrl
                 }).then((response) => {
-                    console.log(response)
+                    console.log(response.data)
                 }).catch(function (error) {
                     console.log(error)
                 })

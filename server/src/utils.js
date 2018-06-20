@@ -92,8 +92,21 @@ const upload = multer({
     // fileFilter() {}
 })
 
+/**
+ * 获取网络地址的后缀名
+ * @param {string} imgUrl
+ */
+function getFilePostfix(imgUrl) {
+    let fileName = imgUrl.substring(imgUrl.lastIndexOf('/') + 1)
+    if (~fileName.indexOf('.')) {
+        return fileName.substring(fileName.lastIndexOf('.') + 1)
+    }
+    return ''
+}
+
 module.exports = {
     execGuetzli,
     upload,
-    getfileDiff
+    getfileDiff,
+    getFilePostfix
 }

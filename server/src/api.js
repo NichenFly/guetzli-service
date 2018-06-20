@@ -1,6 +1,10 @@
 const utils = require('./utils')
 let Logger = require('log4js').getLogger()
 const config = require('./config')
+const http = require('http')
+const https = require('https')
+const fs = require('fs')
+const md5 = require('md5')
 
 // 日志等级
 Logger.level = 'all'
@@ -57,12 +61,6 @@ module.exports = {
             // 执行处理逻辑
             utils.execGuetzli(uploadFile.filename, `_${uploadFile.filename}`)
 
-            /* let info = utils.getfileDiff(filepath, dealedFilepath)
-
-            Logger.info('原图大小: %s', info.origin.size)
-            Logger.info('压缩后大小: %s', info.dealed.size)
-            Logger.info('压缩比例: %s%', info.rate) */
-
             // 结果返回
             res.json({
                 code: 0,
@@ -74,13 +72,39 @@ module.exports = {
         // 接收一个图片的url
         apiRoutes.post('/imgurl', function (req, res) {
             Logger.info(req.body.imgUrl)
-            let result = {
-                code: 200,
-                msg: '成功',
-                info: {
-                    file: req.body.imgUrl
-                }
-            }
+
+            let imgUrl = req.body.imgUrl
+
+            let result = {}
+
+            const dateTime = new Date().getTime()
+
+            let postfix = utils.getFilePostfix(imgUrl)
+            let fileName = `${cwd}/${config.savepath}/${config.filePrefix}-${dateTime}-${md5(dateTime)}.${postfix || 'jpg'}`
+
+            let request = imgUrl.startsWith('https') ? https : http
+
+            request.get(imgUrl, (res) => {
+                let imgData = ''
+                res.setEncoding('binary')
+                res.on('data', (chunk) => {
+                    imgData += chunk
+                })
+
+                res.on('end', () => {
+                    fs.writeFileSync(fileName, imgData, 'binary', (err) => {
+                        if (err) {
+                            result.code = 2
+                            result.msg = '下载文件出错'
+                            Logger.error('download error: %s', imgUrl)
+                        } else {
+                            result.code = 0
+                            result.msg = '文件下载成功'
+                            result.filename = fileName
+                        }
+                    })
+                })
+            })
 
             res.json(result)
         })
