@@ -1,20 +1,20 @@
 <template>
   <div class="loading">
-    <img width="24" height="24" src="./loading.gif">
+    <img src="static/loading.gif">
     <p class="desc">{{title}}</p>
   </div>
 </template>
 <script>
-  export default {
-    props: {
-      title: {
-        type: String,
-        default: '正在载入...'
-      }
+    export default {
+        props: {
+            title: {
+                type: String,
+                default: '上传中...'
+            }
+        }
     }
-  }
 </script>
-<style scope>
+<style scoped>
 .loading {
     width: 100%;
     text-align: center;

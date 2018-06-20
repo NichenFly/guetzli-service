@@ -2,12 +2,13 @@ const express = require('express')
 const app = express()
 const http = require('http').Server(app)
 const io = require('socket.io')(http)
-
-const config = require('./config')
 const Logger = require('log4js').getLogger()
 const bodyParser = require('body-parser')
 
-// api定义
+// 初始化全局变量
+require('./constants')
+
+const config = require('./config')
 const api = require('./api')
 const socket = require('./socket')
 

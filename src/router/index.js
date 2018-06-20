@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Guetzli from '@/components/guetzli'
+import Guetzli from '@/components/Guetzli'
 import VueSocketio from 'vue-socket.io'
 
 const dev = process.env.NODE_ENV !== 'production'

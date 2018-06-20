@@ -1,6 +1,6 @@
-const fs = require('fs')
 const utils = require('./utils')
 let Logger = require('log4js').getLogger()
+const config = require('./config')
 
 // 日志等级
 Logger.level = 'all'
@@ -20,7 +20,7 @@ module.exports = {
                     msg: '文件不存在'
                 })
             }
-            res.download(`${cwd}/files/${imgName}`, imgName)
+            res.download(`${cwd}/${config.savepath}/${imgName}`, imgName)
         })
 
         // 获取图片的接口
@@ -33,7 +33,7 @@ module.exports = {
                 })
             }
             const options = {
-                root: `${cwd}/files/`,
+                root: `${cwd}/${config.savepath}/`,
                 headers: {
                     'x-timestamp': Date.now(),
                     'x-sent': true
@@ -54,42 +54,20 @@ module.exports = {
                 return
             }
 
-            const filepath = uploadFile.path
-            const dealedFilepath = `${uploadFile.destination}/_${uploadFile.filename}`
-            const execResult = utils.execGuetzli(filepath, dealedFilepath)
-            if (execResult.code !== 0) {
-                res.json(execResult)
-                return
-            }
+            // 执行处理逻辑
+            utils.execGuetzli(uploadFile.filename, `_${uploadFile.filename}`)
 
-            let fileInfo = fs.statSync(filepath)
-            let dealedFileInfo = fs.statSync(dealedFilepath)
+            /* let info = utils.getfileDiff(filepath, dealedFilepath)
 
-            // 信息状态返回
-            const filename = uploadFile.filename
-            const fileSize = fileInfo.size
-            const dealedSize = dealedFileInfo.size
-
-            let info = {
-                origin: {
-                    filename: `${filename}`,
-                    size: `${parseInt(fileSize / 1000)}KB`
-                },
-                dealed: {
-                    filename: `_${filename}`,
-                    size: `${parseInt(dealedSize / 1000)}KB`
-                },
-                rate: ((fileSize - dealedSize) / fileSize * 100).toFixed(2)
-            }
             Logger.info('原图大小: %s', info.origin.size)
             Logger.info('压缩后大小: %s', info.dealed.size)
-            Logger.info('压缩比例: %s%', info.rate)
+            Logger.info('压缩比例: %s%', info.rate) */
 
             // 结果返回
             res.json({
                 code: 0,
                 msg: '成功',
-                info: info
+                dealedFile: `_${uploadFile.filename}`
             })
         })
 

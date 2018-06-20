@@ -18,6 +18,9 @@
                 <input type="text" class="input"  v-model.trim="imgUrl" @keyup.enter="submit" placeholder="在此处粘贴图片地址(暂不支持)">
             </div>
         </div>
+        <div class="loading" v-if="loading.status">
+            <Loading :title="loading.title"></Loading>
+        </div>
         <div class="show-container">
             <div class="record" v-for="(file, index) in uploadedFiles" :key="index">
                 <div class="left-area">
@@ -46,11 +49,17 @@
 </template>
 <script>
     import VueFileUpload from 'vue-file-upload'
+    import Loading from './Loading'
     import axios from 'axios'
+    import { PROCESS_STATUS } from '@/constants/constants'
 
     export default {
         data() {
             return {
+                loading: {
+                    status: false,
+                    title: ''
+                },
                 imgUrl: '',
                 files: [],
                 uploadedFiles: [],
@@ -66,16 +75,19 @@
                 ],
                 // 回调函数绑定
                 cbEvents: {
+                    onProgressUpload: (file, progress) => {
+                        this.loading.status = true
+                        this.loading.title = '正在上传...'
+                    },
                     onCompleteUpload: (file, response, status, header) => {
                         console.log(response)
                         if (response.code === 0) {
-                            let fileInfo = response.info
-                            fileInfo.origin.url = `/api/img/${fileInfo.origin.filename}`
-                            fileInfo.dealed.url = `/api/img/${fileInfo.dealed.filename}`
-                            fileInfo.dealed.download = `/api/download/${fileInfo.dealed.filename}`
-                            this.uploadedFiles.push(fileInfo)
+                            this.loading.title = '正在处理...'
+                            this.$socket.emit('register', response.dealedFile)
+                        } else {
+                            this.loading.status = false
+                            this.loading.title = ''
                         }
-                        console.log('finish upload')
                     }
                 },
                 // xhr请求附带参数
@@ -93,6 +105,19 @@
         },
         sockets: {
             // socket相关
+            status: function(res) {
+                console.log(res)
+                if (res.status === PROCESS_STATUS.DONE || res.status === PROCESS_STATUS.ERROR) {
+                    if (res.status === PROCESS_STATUS.DONE) {
+                        let fileInfo = res.msg
+                        fileInfo.origin.url = `/api/img/${fileInfo.origin.filename}`
+                        fileInfo.dealed.url = `/api/img/${fileInfo.dealed.filename}`
+                        fileInfo.dealed.download = `/api/download/${fileInfo.dealed.filename}`
+                        this.uploadedFiles.push(fileInfo)
+                    }
+                    this.loading.status = false
+                }
+            }
         },
         methods: {
             submit() {
@@ -132,6 +157,7 @@
             }
         },
         components: {
+            Loading,
             VueFileUpload
         }
     }
