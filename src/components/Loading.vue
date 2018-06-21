@@ -18,6 +18,7 @@
 .loading {
     width: 100%;
     text-align: center;
+    padding-top: 30px;
 }
 .desc {
     line-height: 20px;

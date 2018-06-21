@@ -111,7 +111,7 @@
                         fileInfo.origin.url = `/api/img/${fileInfo.origin.filename}`
                         fileInfo.dealed.url = `/api/img/${fileInfo.dealed.filename}`
                         fileInfo.dealed.download = `/api/download/${fileInfo.dealed.filename}`
-                        this.uploadedFiles.push(fileInfo)
+                        this.uploadedFiles.unshift(fileInfo)
                     }
                     this.loading.status = false
                 }
