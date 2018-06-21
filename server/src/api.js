@@ -5,12 +5,14 @@ const http = require('http')
 const https = require('https')
 const fs = require('fs')
 const md5 = require('md5')
+const path = require('path')
 
 // 日志等级
 Logger.level = 'all'
 
 // 获取当前的项目目录
 const cwd = process.cwd()
+const savepath = path.join(cwd, `../${config.savepath}`)
 
 module.exports = {
     init: function (apiRoutes) {
@@ -24,7 +26,7 @@ module.exports = {
                     msg: '文件不存在'
                 })
             }
-            res.download(`${cwd}/${config.savepath}/${imgName}`, imgName)
+            res.download(`${savepath}/${imgName}`, imgName)
         })
 
         // 获取图片的接口
@@ -37,7 +39,7 @@ module.exports = {
                 })
             }
             const options = {
-                root: `${cwd}/${config.savepath}/`,
+                root: `${savepath}/`,
                 headers: {
                     'x-timestamp': Date.now(),
                     'x-sent': true
@@ -80,7 +82,7 @@ module.exports = {
             const dateTime = new Date().getTime()
 
             let postfix = utils.getFilePostfix(imgUrl)
-            let fileName = `${cwd}/${config.savepath}/${config.filePrefix}-${dateTime}-${md5(dateTime)}.${postfix || 'jpg'}`
+            let fileName = `${savepath}/${config.filePrefix}-${dateTime}-${md5(dateTime)}.${postfix || 'jpg'}`
 
             let request = imgUrl.startsWith('https') ? https : http
 

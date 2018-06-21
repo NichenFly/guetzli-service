@@ -5,6 +5,7 @@ const md5 = require('md5')
 const fs = require('fs')
 const config = require('./config')
 const socket = require('./socket')
+const path = require('path')
 require('./constants')
 
 // 日志等级
@@ -16,7 +17,7 @@ const PROCESS_STATUS = global.PROCESS_STATUS
 
 // 获取当前的项目目录
 const cwd = process.cwd()
-const saveFilepath = `${cwd}/${config.savepath}`
+const saveFilepath = path.join(cwd, `../${config.savepath}`)
 
 /**
  * 异步执行压缩逻辑, 把处理结果写入处理队列
@@ -25,8 +26,6 @@ const saveFilepath = `${cwd}/${config.savepath}`
  */
 function execGuetzli(file, dealedFile) {
     let obj = {
-        origin: file,
-        dealed: dealedFile,
         status: PROCESS_STATUS.CREATE,
         msg: ''
     }
@@ -55,8 +54,8 @@ function execGuetzli(file, dealedFile) {
 }
 
 function getfileDiff(origin, dealed) {
-    let originFile = `${cwd}/${config.savepath}/${origin}`
-    let dealedFile = `${cwd}/${config.savepath}/${dealed}`
+    let originFile = `${saveFilepath}/${origin}`
+    let dealedFile = `${saveFilepath}/${dealed}`
 
     let fileInfo = fs.statSync(originFile)
     let dealedFileInfo = fs.statSync(dealedFile)
@@ -71,7 +70,7 @@ function getfileDiff(origin, dealed) {
             size: `${parseInt(fileSize / 1000)}KB`
         },
         dealed: {
-            filename: `_${dealed}`,
+            filename: `${dealed}`,
             size: `${parseInt(dealedSize / 1000)}KB`
         },
         rate: ((fileSize - dealedSize) / fileSize * 100).toFixed(2)
@@ -80,7 +79,7 @@ function getfileDiff(origin, dealed) {
 }
 
 let storage = multer.diskStorage({
-    destination: `${cwd}/${config.savepath}`,
+    destination: `${saveFilepath}`,
     filename: function (req, file, cb) {
         var fileFormat = (file.originalname).split('.')
         cb(null, `${config.filePrefix}-${new Date().getTime()}-${md5(file)}.${fileFormat[fileFormat.length - 1]}`)

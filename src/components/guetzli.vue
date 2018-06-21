@@ -80,7 +80,6 @@
                         this.loading.title = '正在上传...'
                     },
                     onCompleteUpload: (file, response, status, header) => {
-                        console.log(response)
                         if (response.code === 0) {
                             this.loading.title = '正在处理...'
                             this.$socket.emit('register', response.dealedFile)
@@ -106,7 +105,6 @@
         sockets: {
             // socket相关
             status: function(res) {
-                console.log(res)
                 if (res.status === PROCESS_STATUS.DONE || res.status === PROCESS_STATUS.ERROR) {
                     if (res.status === PROCESS_STATUS.DONE) {
                         let fileInfo = res.msg
