@@ -2,9 +2,9 @@
     <div class="container">
         <div class="img-container">
             <div class="upload-area">
-                <input type="file" class="upload">
+                <!-- <input type="file" class="upload"> -->
                 <vue-file-upload
-                    label="本地上传"
+                    label="上传"
                     :url="url"
                     :filters="filters"
                     :events="cbEvents"
@@ -14,9 +14,9 @@
                     name="guetzli"
                     ref="vueFileUploader"></vue-file-upload>
             </div>
-            <div class="input-area">
+            <!-- <div class="input-area">
                 <input type="text" class="input"  v-model.trim="imgUrl" @keyup.enter="submit" placeholder="在此处粘贴图片地址(暂不支持)">
-            </div>
+            </div> -->
         </div>
         <div class="loading" v-if="loading.status">
             <Loading :title="loading.title"></Loading>
@@ -169,35 +169,35 @@
         & > .img-container {
             background-color: #ccc;
             display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 0 260px;
 
             & > .upload-area {
                 padding: 20px;
-                display: flex;
                 height: 40px;
 
                 & > .fileupload-button {
-                    padding: 10px;
+                    padding: 10 20px;
                     background-color: #fff;
                     color: #2c3e50;
-                    font-size: 16px;
-                }
-
-                & > .upload {
-                    display: none;
+                    font-size: 20px;
                 }
             }
             
             & > .input-area {
-                padding: 20px;
+                padding: 10px;
                 display: flex;
                 flex-grow: 1;
 
                 & > .input {
+                    font-size: 16px;
+                    padding: 10px;
                     outline: none;
                     text-indent: 10px;
                     border: 1px solid #ccc;
                     width: 100%;
+                    border-radius: 3px;
                 }
                 & > .input:focus {
                     border: 1px solid #2c3e50;
