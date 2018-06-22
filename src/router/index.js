@@ -6,12 +6,12 @@ import VueSocketio from 'vue-socket.io'
 const dev = process.env.NODE_ENV !== 'production'
 
 Vue.use(Router)
-Vue.use(VueSocketio, dev ? ':5000/' : '')
+Vue.use(VueSocketio, dev ? ':5000/' : '/')
 
 export default new Router({
     routes: [{
         path: '/',
-        name: 'guetzli',
+        name: 'index',
         component: Guetzli
     }]
 })

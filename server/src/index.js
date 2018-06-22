@@ -4,6 +4,7 @@ const http = require('http').Server(app)
 const io = require('socket.io')(http)
 const Logger = require('log4js').getLogger()
 const bodyParser = require('body-parser')
+const path = require('path')
 
 // 初始化全局变量
 require('./constants')
@@ -14,6 +15,15 @@ const socket = require('./socket')
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+
+let publicDir = path.join(__dirname, '../public')
+
+app.use('/public', express.static(publicDir))
+app.use('/static', express.static(`${publicDir}/static`))
+
+app.get('/', function (req, res) {
+    res.sendFile(`${publicDir}/index.html`)
+})
 
 const apiRoutes = express.Router()
 app.use('/api', apiRoutes)
